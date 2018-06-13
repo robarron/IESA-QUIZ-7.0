@@ -6,3 +6,6 @@ api_platform:
             apiKey:
                 name: Authorization
                 type: header
+    enable_nelmio_api_doc: true
+
+
