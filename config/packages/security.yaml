@@ -1,35 +1,54 @@
-# app/config/packages/security.yaml
 security:
-    encoders:
-            App\Entity\User:
-                algorithm: bcrypt
+ role_hierarchy:
+     ROLE_SUPER_ADMIN:       [ROLE_ADMIN, ROLE_SONATA_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+ # http://sonata-project.org/bundles/admin/2-3/doc/reference/security.html
+ # set access_strategy to unanimous, else you may have unexpected behaviors
+ access_decision_manager:
+     strategy: unanimous
 
-    role_hierarchy:
-        ROLE_READER: ROLE_USER
-        ROLE_ADMIN: ROLE_READER
+ encoders:
+     FOS\UserBundle\Model\UserInterface: sha512
 
-    providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username
+ providers:
+     fos_userbundle:
+         id: fos_user.user_provider.username_email
 
-    firewalls:
-        login:
-            pattern:  ^/api/login
-            stateless: true
-            anonymous: true
-            form_login:
-                check_path:               /api/login_check
-                success_handler:          lexik_jwt_authentication.handler.authentication_success
-                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
-                require_previous_session: false
+ firewalls:
+     dev:
+         pattern:  ^/(_(profiler|wdt)|css|images|js)/
+         security: false
 
-        api:
-            pattern:   ^/api
-            stateless: true
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
+     api_login:
+         pattern: ^/api/login # Default: .*
+         provider: fos_userbundle
 
-    access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+         # form login
+         form_login:
+             username_parameter: username
+             password_parameter: password
+             login_path:     fos_user_security_login
+             # csrf_provider: form.csrf_provider # Default: my.csrf_provider.id
+             # LexikJWT # 09/01/15 - Note: provient de la configuration officielle.
+             check_path:     api_login_check
+             success_handler:          lexik_jwt_authentication.handler.authentication_success
+             failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+             require_previous_session: false
+         anonymous: true # Default: ~
+
+     api:
+         pattern:   ^/api
+         stateless: true
+         lexik_jwt:
+             authorization_header: # check token in Authorization Header
+                 enabled: true
+                 prefix:  Bearer
+         anonymous: true
+
+ access_control:
+     # Secured part of the site
+     # This config requires being logged for the whole site and having the admin role for the admin part.
+     # Change these rules to adapt them to your needs
+     - { path: "^/api/contacts$", roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+     - { path: "^/api/users/dt$", roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
+     - { path: "^/api/users$", roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+     - { path: "^/api",       roles: [IS_AUTHENTICATED_FULLY] }
