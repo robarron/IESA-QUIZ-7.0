@@ -1,9 +1,5 @@
 lexik_jwt_authentication:
-    private_key_path: '%jwt_private_key_path%'
-    public_key_path:  '%jwt_public_key_path%'
-    pass_phrase:      '%jwt_key_pass_phrase%'
+    secret_key:       '%jwt_private_key_path%' # required for token creation
+    public_key:       '%jwt_public_key_path%'  # required for token verification
+    pass_phrase:      '%jwt_key_pass_phrase%'  # required for token creation
     token_ttl:        '%jwt_token_ttl%'
-    token_extractors:
-            authorization_header: ~
-            cookie: ~
-            query_parameter: ~
