@@ -32,6 +32,11 @@ class Theme
      */
     private $quizzes;
 
+    /**
+     * @ORM\Column(type="string", length=1000, nullable=true)
+     */
+    private $pic;
+
     public function __construct()
     {
         $this->quizzes = new ArrayCollection();
@@ -84,4 +89,17 @@ class Theme
 
         return $this;
     }
+
+    public function getPic()
+    {
+        return $this->pic;
+    }
+
+    public function setImg($img): self
+    {
+        $this->pic = $img;
+
+        return $this;
+    }
+
 }

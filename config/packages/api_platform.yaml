@@ -7,5 +7,18 @@ api_platform:
                 name: Authorization
                 type: header
     enable_nelmio_api_doc: true
+    enable_fos_user: true
+    formats:
+        json:
+            mime_types: ['application/json']
+
+        jsonld:
+            mime_types: ['application/ld+json']
+
+        html!:
+            mime_types: ['text/html']
+framework:
+        form: { enabled: true }
+        serializer: { enable_annotations: true }
 
 

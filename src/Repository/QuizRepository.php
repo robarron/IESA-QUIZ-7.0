@@ -19,6 +19,15 @@ class QuizRepository extends ServiceEntityRepository
         parent::__construct($registry, Quiz::class);
     }
 
+    public function getQuestionByTheme($themeId): ?Quiz
+    {
+        $qb = $this->createQueryBuilder('q')
+            ->where('q.theme = :themeId')
+            ->setParameter('themeId', $themeId);
+
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Quiz[] Returns an array of Quiz objects
 //     */
@@ -47,4 +56,6 @@ class QuizRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
 }
