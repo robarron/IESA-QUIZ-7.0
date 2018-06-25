@@ -13,10 +13,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\QuizRepository")
- * @ApiResource(iri="http://schema.org/Quiz", itemOperations={
- *     "get",
- *     "special"={"route_name"="get_one_question_by_theme"}
- * }))
+ * @ApiResource(iri="http://schema.org/Quiz",collectionOperations={"get"},
+ *     itemOperations={"get"})
 */
 class Quiz
 {

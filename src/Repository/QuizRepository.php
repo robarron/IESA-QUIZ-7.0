@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Quiz;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Validator\Constraints\Collection;
 
 /**
  * @method Quiz|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,7 +21,12 @@ class QuizRepository extends ServiceEntityRepository
         parent::__construct($registry, Quiz::class);
     }
 
-    public function getQuestionByTheme($themeId): ?Quiz
+    /**
+     * @param $themeId
+     * @param $QuizId
+     * @return mixed
+     */
+    public function getQuestionByTheme($themeId)
     {
         $qb = $this->createQueryBuilder('q')
             ->where('q.theme = :themeId')

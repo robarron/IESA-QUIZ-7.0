@@ -7,17 +7,15 @@ use App\Entity\Theme;
 use App\Form\QuizType;
 use App\Repository\QuizRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/quiz")
- */
 class QuizController extends Controller
 {
     /**
-     * @Route("/", name="quiz_index", methods="GET")
+     * @Route("/quiz/", name="quiz_index", methods="GET")
      */
     public function index(QuizRepository $quizRepository): Response
     {
@@ -25,7 +23,7 @@ class QuizController extends Controller
     }
 
     /**
-     * @Route("/new", name="quiz_new", methods="GET|POST")
+     * @Route("/quiz/new", name="quiz_new", methods="GET|POST")
      */
     public function new(Request $request): Response
     {
@@ -48,7 +46,7 @@ class QuizController extends Controller
     }
 
     /**
-     * @Route("/{id}", name="quiz_show", methods="GET")
+     * @Route("/quiz/{id}", name="quiz_show", methods="GET")
      */
     public function show(Quiz $quiz): Response
     {
@@ -56,7 +54,7 @@ class QuizController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="quiz_edit", methods="GET|POST")
+     * @Route("/quiz/{id}/edit", name="quiz_edit", methods="GET|POST")
      */
     public function edit(Request $request, Quiz $quiz): Response
     {
@@ -76,7 +74,7 @@ class QuizController extends Controller
     }
 
     /**
-     * @Route("/{id}", name="quiz_delete", methods="DELETE")
+     * @Route("/quiz/{id}", name="quiz_delete", methods="DELETE")
      */
     public function delete(Request $request, Quiz $quiz): Response
     {
@@ -92,12 +90,8 @@ class QuizController extends Controller
     /**
      * @Route(
      *     name="get_one_question_by_theme",
-     *     path="/themes/{themeId}/questions/{questionId}",
-     *     methods={"GET"},
-     *     defaults={
-     *         "_api_resource_class"=Quiz::class,
-     *         "_api_item_operation_name"="special"
-     *     }
+     *     path="/api/themes/{themeId}/questions",
+     *     methods={"GET"}
      * )
      */
     public function getOneQuestionByTheme($themeId)
@@ -106,15 +100,23 @@ class QuizController extends Controller
             ->getRepository(Quiz::class)
             ->getQuestionByTheme($themeId);
 
-        $formatted[] = [
-            'question' => $quiz->getQuestion() ?: null,
-            'reponse' => $quiz->getReponse() ? $quiz->getReponse() : null,
-            'proposition_1' => $quiz->getProp1() ? $quiz->getReponse() : null,
-            'proposition_2' => $quiz->getProp2() ? $quiz->getReponse() : null,
-            'proposition_3' => $quiz->getProp3() ? $quiz->getReponse() : null,
-            'proposition_4' => $quiz->getProp4() ? $quiz->getReponse() : null,
-            'theme_id' => $quiz->getTheme() ? $quiz->getTheme() : null,
-        ];
-        return $formatted;
+
+        $formatted=[];
+
+        foreach ($quiz as $q) {
+            $formatted[] = [
+            'id' => $q->getId() ? $q->getId() : null,
+            'question' => $q->getQuestion() ? $q->getQuestion() : null,
+            'reponse' => $q->getReponse() ? $q->getReponse() : null,
+            'proposition_1' => $q->getProp1() ? $q->getProp1() : null,
+            'proposition_2' => $q->getProp2() ? $q->getProp2() : null,
+            'proposition_3' => $q->getProp3() ? $q->getProp3() : null,
+            'proposition_4' => $q->getProp4() ? $q->getProp4() : null,
+            'theme_id' => $themeId ? $themeId : null,
+            ];        }
+
+        $response = new JsonResponse(array('quiz' => $formatted));
+
+        return $response;
     }
 }
