@@ -33,11 +33,17 @@ class User extends BaseUser
      */
     private $gamesPlayer2;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Result", mappedBy="User")
+     */
+    private $results;
+
     public function __construct()
     {
         parent::__construct();
         $this->gamesPlayer1 = new ArrayCollection();
         $this->gamesPlayer2 = new ArrayCollection();
+        $this->results = new ArrayCollection();
     }
 
     public function getId()
@@ -101,6 +107,37 @@ class User extends BaseUser
             // set the owning side to null (unless already changed)
             if ($gamePlayer2->getPlayer2() === $this) {
                 $gamePlayer2->setPlayer2(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Result[]
+     */
+    public function getResults(): Collection
+    {
+        return $this->results;
+    }
+
+    public function addResult(Result $result): self
+    {
+        if (!$this->results->contains($result)) {
+            $this->results[] = $result;
+            $result->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResult(Result $result): self
+    {
+        if ($this->results->contains($result)) {
+            $this->results->removeElement($result);
+            // set the owning side to null (unless already changed)
+            if ($result->getUser() === $this) {
+                $result->setUser(null);
             }
         }
 
